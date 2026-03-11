@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Begin/Begin.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
+    path: "Assets/Scenes/\u6F2B\u753B/\u6F2B\u753B.unity"
+    guid: 5b573740198077a47a269863b294f63a
+  - enabled: 1
     path: "Assets/Scenes/\u8679\u6CE2\u6E21/\u8679\u6CE2\u6E21.unity"
     guid: 2df0809de4e7deb47adc37a1f5447d83
   m_configObjects: {}
