@@ -19,8 +19,23 @@ public class PlayerController : MonoBehaviour
 
         Vector3 clampedPosition = transform.position;
 
-        clampedPosition.x = Mathf.Clamp(clampedPosition.x, 0, 200);
+        clampedPosition.x = Mathf.Clamp(clampedPosition.x, -12, 12);
 
         transform.position = clampedPosition;
+    }
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        // 如果碰到的东西，标签是 "GoodWood"
+        if (other.CompareTag("GoodWood"))
+        {
+            GameManager.instance.AddScore(); 
+            Destroy(other.gameObject);     
+        }
+        // 如果碰到的东西，标签是 "BadWood" (朽木)
+        else if (other.CompareTag("BadWood"))
+        {
+            GameManager.instance.WrongWood();
+            Destroy(other.gameObject);      
+        }
     }
 }
