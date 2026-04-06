@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using NodeCanvas.Tasks.Actions;
+using UnityEngine.SceneManagement;
+
 public class trans : MonoBehaviour
 {
     [Header("把你的9个虚拟摄像机按顺序拖进来")]
@@ -37,6 +40,7 @@ public class trans : MonoBehaviour
         }
         else
         {
+            SceneManager.LoadScene("对话");
             Debug.Log("漫画剧情播放完毕！");
         }
     }
