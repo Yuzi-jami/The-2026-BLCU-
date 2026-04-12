@@ -40,7 +40,7 @@ public class trans : MonoBehaviour
         }
         else
         {
-            SceneManager.LoadScene("对话");
+            SceneManager.LoadScene("整体关卡");
             Debug.Log("漫画剧情播放完毕！");
         }
     }

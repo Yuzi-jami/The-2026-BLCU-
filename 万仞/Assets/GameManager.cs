@@ -149,7 +149,7 @@ public class GameManager : MonoBehaviour
 
         if(currentScore >= scoreToWin)
         {
-            SceneManager.LoadScene("对话2");
+            SceneManager.LoadScene("对话3");
         }
     }
     
