@@ -257,7 +257,7 @@ MonoBehaviour:
   aud: {fileID: 290983608}
   progressBar: {fileID: 1314511606}
   panel1CanvasGroup: {fileID: 650582130}
-  scoreToWin: 15
+  scoreToWin: 10
 --- !u!4 &211836941
 Transform:
   m_ObjectHideFlags: 0
