@@ -331,6 +331,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   panel1: {fileID: 107494196}
   panel2: {fileID: 28748231}
+  ss: "\u5173\u53612"
 --- !u!4 &697643558
 Transform:
   m_ObjectHideFlags: 0
