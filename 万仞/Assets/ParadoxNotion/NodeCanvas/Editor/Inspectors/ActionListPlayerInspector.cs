@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using NodeCanvas.Framework;
 using ParadoxNotion.Design;
+using NodeCanvas.Editor;
 
 namespace NodeCanvas.Editor
 {

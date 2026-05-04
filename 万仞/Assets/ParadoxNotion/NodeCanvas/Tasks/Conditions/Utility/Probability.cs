@@ -7,7 +7,7 @@ namespace NodeCanvas.Tasks.Conditions
 {
 
     [Category("✫ Utility")]
-    [Description("Return true or false based on the probability settings. The chance is rolled for once whenever the condition is enabled.")]
+    [Description("Return true or false based on the probability settings.")]
     public class Probability : ConditionTask
     {
 

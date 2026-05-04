@@ -208,13 +208,11 @@ namespace NodeCanvas.Framework
                 EditorUtils.Separator();
                 TaskEditor.TaskFieldSingle(currentViewCondition, (c) =>
                 {
-                    var i = conditions.IndexOf(currentViewCondition);
                     if ( c == null ) {
+                        var i = conditions.IndexOf(currentViewCondition);
                         conditions.RemoveAt(i);
-                    } else {
-                        conditions[i] = (ConditionTask)c;
                     }
-                    currentViewCondition = c as ConditionTask;
+                    currentViewCondition = (ConditionTask)c;
                 });
             }
         }

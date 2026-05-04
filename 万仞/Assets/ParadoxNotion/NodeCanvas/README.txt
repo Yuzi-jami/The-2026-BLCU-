@@ -50,8 +50,8 @@ You can of course re-generate the file any time you wish.
 -------------------------------------------------------------
 THIRD PARTY NOTICES
 -------------------------------------------------------------
-This package uses a modified version of 'Full Serializer' under the MIT License.
-See "..ParadoxNotion/CanvasCore/Common/Runtime/Serialization/Full Serializer/LICENSE (FullSerializer).txt".
+This package uses 'Full Serializer' under the MIT license.
+See "..ParadoxNotion/CanvasCore/Common/Runtime/Serialization/Full Serializer/License (FullSerializer).txt".
 
 
 -------------------------------------------------------------

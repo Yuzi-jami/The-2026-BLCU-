@@ -104,7 +104,7 @@ namespace ParadoxNotion.Design
         private const float HELP_RECT_HEIGHT = 58;
         private readonly Color hoverColor = new Color(0.5f, 0.5f, 1, 0.3f);
 
-        private static System.Threading.Thread menuGenerationThread;
+
         private static System.Threading.Thread treeGenerationThread;
         private static System.Threading.Thread searchGenerationThread;
 
@@ -134,7 +134,7 @@ namespace ParadoxNotion.Design
         private int lastHoveringIndex;
         private int hoveringIndex;
         private float helpRectRequiredHeight;
-        private System.Type wasFocusedWindowType;
+        private EditorWindow wasFocusedWindow;
 
 
         ///----------------------------------------------------------------------------------------------
@@ -158,24 +158,20 @@ namespace ParadoxNotion.Design
 
         ///<summary>Shows the popup menu at position and with title. getMenu is called async</summary>
         public static void ShowAsync(Vector2 pos, string title, System.Type keyType, System.Func<GenericMenu> getMenu) {
-            current = new GenericMenuBrowser(null, title, keyType);
-            menuGenerationThread = Threader.StartFunction(menuGenerationThread, getMenu, (m) =>
-            {
-                if ( current != null ) { current.SetMenu(m); }
-                menuGenerationThread = null;
-            });
-            PopupWindow.Show(new Rect(pos.x, pos.y, 0, 0), current);
+            var browser = new GenericMenuBrowser(null, title, keyType);
+            var task = Task.Run(() => getMenu()).ContinueWith((m) => browser.SetMenu(m.Result));
+            PopupWindow.Show(new Rect(pos.x, pos.y, 0, 0), browser);
         }
 
         ///<summary>Shows the popup menu at position and with title</summary>
         public static GenericMenuBrowser Show(GenericMenu newMenu, Vector2 pos, string title, System.Type keyType) {
-            current = new GenericMenuBrowser(newMenu, title, keyType);
-            PopupWindow.Show(new Rect(pos.x, pos.y, 0, 0), current);
-            return current;
+            var browser = new GenericMenuBrowser(newMenu, title, keyType);
+            PopupWindow.Show(new Rect(pos.x, pos.y, 0, 0), browser);
+            return browser;
         }
 
         ///<summary>constructor</summary>
-        GenericMenuBrowser(GenericMenu newMenu, string title, System.Type keyType) {
+        public GenericMenuBrowser(GenericMenu newMenu, string title, System.Type keyType) {
             current = this;
             headerTitle = title;
             currentKeyType = keyType;
@@ -187,14 +183,13 @@ namespace ParadoxNotion.Design
         }
 
         ///<summary>Set another menu after it's open</summary>
-        void SetMenu(GenericMenu newMenu) {
+        public void SetMenu(GenericMenu newMenu) {
             if ( newMenu == null ) {
                 return;
             }
 
             willRepaint = true;
             boundMenu = newMenu;
-
             treeGenerationThread = Threader.StartAction(treeGenerationThread, current.GenerateTree, () =>
            {
                treeGenerationThread = null;
@@ -206,7 +201,7 @@ namespace ParadoxNotion.Design
         public override void OnOpen() {
             EditorApplication.update -= OnEditorUpdate;
             EditorApplication.update += OnEditorUpdate;
-            wasFocusedWindowType = EditorWindow.focusedWindow?.GetType();
+            wasFocusedWindow = EditorWindow.focusedWindow;
             LoadPrefs();
         }
 
@@ -214,11 +209,10 @@ namespace ParadoxNotion.Design
         public override void OnClose() {
             SavePrefs();
             EditorApplication.update -= OnEditorUpdate;
-            // if ( menuGenerationThread != null && menuGenerationThread.IsAlive ) { menuGenerationThread.Abort(); menuGenerationThread = null; }
             if ( treeGenerationThread != null && treeGenerationThread.IsAlive ) { treeGenerationThread.Abort(); treeGenerationThread = null; }
             if ( searchGenerationThread != null && searchGenerationThread.IsAlive ) { searchGenerationThread.Abort(); searchGenerationThread = null; }
             current = null;
-            if ( wasFocusedWindowType != null ) { EditorWindow.FocusWindowIfItsOpen(wasFocusedWindowType); }
+            EditorWindow.FocusWindowIfItsOpen(wasFocusedWindow != null ? wasFocusedWindow.GetType() : null);
         }
 
         //check flag and repaint?
@@ -230,7 +224,7 @@ namespace ParadoxNotion.Design
         }
 
         //...
-        void LoadPrefs() {
+        private void LoadPrefs() {
             if ( data == null ) {
                 var json = EditorPrefs.GetString(PREFERENCES_KEY);
                 if ( !string.IsNullOrEmpty(json) ) { data = JSONSerializer.Deserialize<SerializationData>(json); }
@@ -248,7 +242,7 @@ namespace ParadoxNotion.Design
         }
 
         //...
-        void SavePrefs() {
+        private void SavePrefs() {
             data.filterFavorites = filterFavorites;
             if ( currentKeyType != null ) {
                 data.allFavorites[currentKeyType.Name] = favorites;
@@ -257,14 +251,14 @@ namespace ParadoxNotion.Design
         }
 
         //...
-        void AddFavorite(string path) {
+        public void AddFavorite(string path) {
             if ( !favorites.Contains(path) ) {
                 favorites.Add(path);
             }
         }
 
         //...
-        void RemoveFavorite(string path) {
+        public void RemoveFavorite(string path) {
             if ( favorites.Contains(path) ) {
                 favorites.Remove(path);
             }
@@ -399,7 +393,7 @@ namespace ParadoxNotion.Design
                 hoveringIndex = -1;
                 if ( !string.IsNullOrEmpty(search) ) {
 
-                    // //provide null reference thread (thus no aborting) so that results update all the time
+                    //provide null reference thread (thus no aborting) so that results update all the time
                     searchGenerationThread = Threader.StartFunction(null, GenerateSearchResults, (resultNode) =>
                     {
                         currentNode = resultNode;

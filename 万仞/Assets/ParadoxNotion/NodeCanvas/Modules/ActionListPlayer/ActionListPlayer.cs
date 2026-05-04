@@ -12,9 +12,12 @@ namespace NodeCanvas
 
         public bool playOnAwake;
 
-        [SerializeField] private string _serializedList;
-        [SerializeField] private List<UnityEngine.Object> _objectReferences;
-        [SerializeField] private Blackboard _blackboard;
+        [SerializeField]
+        private string _serializedList;
+        [SerializeField]
+        private List<UnityEngine.Object> _objectReferences;
+        [SerializeField]
+        private Blackboard _blackboard;
 
         [System.NonSerialized]
         private ActionList _actionList;
@@ -22,7 +25,7 @@ namespace NodeCanvas
         private float timeStarted;
 
         void ISerializationCallbackReceiver.OnBeforeSerialize() {
-            // if ( ParadoxNotion.Services.Threader.applicationIsPlaying ) { return; }
+            if ( ParadoxNotion.Services.Threader.applicationIsPlaying ) { return; }
             _objectReferences = new List<UnityEngine.Object>();
             _serializedList = JSONSerializer.Serialize(typeof(ActionList), _actionList, _objectReferences);
         }
@@ -73,10 +76,10 @@ namespace NodeCanvas
         }
 
         void ITaskSystem.SendEvent(string name, object value, object sender) {
-            ParadoxNotion.Services.Logger.LogWarning("Sending events to standalone action lists has no effect", LogTag.EXECUTION, this);
+            ParadoxNotion.Services.Logger.LogWarning("Sending events to action lists has no effect");
         }
         void ITaskSystem.SendEvent<T>(string name, T value, object sender) {
-            ParadoxNotion.Services.Logger.LogWarning("Sending events to standalone action lists has no effect", LogTag.EXECUTION, this);
+            ParadoxNotion.Services.Logger.LogWarning("Sending events to action lists has no effect");
         }
 
         [ContextMenu("Play")]

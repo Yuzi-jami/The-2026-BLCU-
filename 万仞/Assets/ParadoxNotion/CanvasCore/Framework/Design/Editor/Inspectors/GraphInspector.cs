@@ -20,29 +20,13 @@ namespace NodeCanvas.Editor
             UndoUtility.CheckUndo(this, "Graph Inspector");
             ShowBasicGUI();
             EditorUtils.Separator();
-
-            if ( graph.externalSerializationFile == null ) {
-                if ( GUILayout.Button("Create External Serialization Text Asset") ) {
-                    var path = EditorUtility.SaveFilePanelInProject("Create Text Asset", target.name, "txt", "");
-                    if ( !string.IsNullOrEmpty(path) ) {
-                        System.IO.File.WriteAllText(path, ParadoxNotion.Serialization.JSONSerializer.PrettifyJson(graph.GetSerializedJsonData()));
-                        AssetDatabase.Refresh();
-                        graph.externalSerializationFile = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
-                    }
-                }
-            } else {
-                graph.externalSerializationFile = (TextAsset)EditorGUILayout.ObjectField("External Serialization File", graph.externalSerializationFile, typeof(TextAsset), true);
-                EditorGUILayout.HelpBox("Be careful! The assigned Text Asset contents will be completely replaced with the json serialization of this graph. The graph will also deserialize from the json contents of the Text Asset whenever the Text Asset is imported by Unity. You can remove the assigned file at any time.", MessageType.Warning);
-            }
-
-            EditorUtils.Separator();
-            BlackboardEditor.ShowVariables(graph.blackboard, graph);
+            ShowBlackboardGUI();
             EditorUtils.EndOfInspector();
             UndoUtility.CheckDirty(this);
         }
 
         //name, description, edit button
-        void ShowBasicGUI() {
+        public void ShowBasicGUI() {
             GUILayout.Space(10);
             graph.category = GUILayout.TextField(graph.category);
             EditorUtils.CommentLastTextField(graph.category, "Category...");
@@ -55,6 +39,10 @@ namespace NodeCanvas.Editor
                 GraphEditor.OpenWindow(graph);
             }
             GUI.backgroundColor = Color.white;
+        }
+
+        public void ShowBlackboardGUI() {
+            BlackboardEditor.ShowVariables(graph.blackboard, graph);
         }
     }
 }

@@ -71,7 +71,6 @@ namespace NodeCanvas.BehaviourTrees
 
             if ( defferedStatus != Status.Resting ) {
                 ResetRunning();
-                status = defferedStatus;
                 return defferedStatus;
             }
 

@@ -278,7 +278,7 @@ namespace NodeCanvas.Framework
 
             GUI.color = node.isActive ? Color.white : new Color(0.9f, 0.9f, 0.9f, 0.8f);
             GUI.color = GraphEditorUtility.activeElement == node ? new Color(0.9f, 0.9f, 1) : GUI.color;
-            //Remark: using MaxWidth and MaxHeight makes GUILayout window contract width and height \o/
+            //Remark: using MaxWidth and MaxHeight makes GUILayout window contract width and height
             node.rect = GUILayout.Window(node.ID, node.rect, (ID) => { NodeWindowGUI(node, ID); }, string.Empty, StyleSheet.window, GUILayout.MaxHeight(MIN_SIZE.y), GUILayout.MaxWidth(MIN_SIZE.x));
 
             GUI.color = Color.white;
@@ -428,7 +428,7 @@ namespace NodeCanvas.Framework
             //Mouse up
             if ( e.type == EventType.MouseUp ) {
                 if ( node.nodeIsPressed ) {
-                    node.TrySortConnectionsByRelativePosition();
+                    node.TrySortConnectionsByPositionX();
                 }
                 if ( adjustingBoundCanvasGroups != null ) {
                     foreach ( var group in adjustingBoundCanvasGroups ) { group.FlushContainedNodes(); }
@@ -855,18 +855,13 @@ namespace NodeCanvas.Framework
         }
 
 
-        //Editor. Sorts the parent node connections based on all child nodes position according to flow direction. Possible only when not in play mode.
-        public void TrySortConnectionsByRelativePosition() {
-            if ( !Application.isPlaying && graph != null && graph.isTree && graph.flowDirection != PlanarDirection.Auto ) {
+        //Editor. Sorts the parent node connections based on all child nodes X position. Possible only when not in play mode.
+        public void TrySortConnectionsByPositionX() {
+            if ( !Application.isPlaying && graph != null && graph.isTree ) {
                 foreach ( var connection in inConnections.ToArray() ) {
                     var node = connection.sourceNode;
                     var original = node.outConnections.ToList();
-                    if ( graph.flowDirection == PlanarDirection.Horizontal ) {
-                        node.outConnections = node.outConnections.OrderBy(c => c.targetNode.rect.center.y).ToList();
-                    }
-                    if ( graph.flowDirection == PlanarDirection.Vertical ) {
-                        node.outConnections = node.outConnections.OrderBy(c => c.targetNode.rect.center.x).ToList();
-                    }
+                    node.outConnections = node.outConnections.OrderBy(c => c.targetNode.rect.center.x).ToList();
                     var oldIndeces = node.outConnections.Select(x => original.IndexOf(x)).ToArray();
                     foreach ( var field in node.GetType().RTGetFields() ) {
                         if ( field.RTIsDefined<AutoSortWithChildrenConnections>(true) ) {
@@ -954,27 +949,16 @@ namespace NodeCanvas.Framework
                 return;
             }
 
-            var portOffset = 6;
+            var yOffset = 6;
 
             if ( fullDrawPass || drawCanvas.Overlaps(rect) ) {
                 var canHaveMoreOutConnection = outConnections.Count < maxOutConnections || maxOutConnections == -1;
-                Rect nodeOutputBox = default(Rect);
-                if ( graph.flowDirection == PlanarDirection.Vertical ) {
-                    nodeOutputBox = new Rect(rect.x, rect.yMax - 2, rect.width, canHaveMoreOutConnection ? 12 : 10);
-                }
-                if ( graph.flowDirection == PlanarDirection.Horizontal ) {
-                    nodeOutputBox = new Rect(rect.xMax, rect.yMin, canHaveMoreOutConnection ? 12 : 10, rect.height);
-                }
+                var nodeOutputBox = new Rect(rect.x, rect.yMax - 2, rect.width, canHaveMoreOutConnection ? 12 : 10);
                 Styles.Draw(nodeOutputBox, StyleSheet.nodePortContainer);
 
                 if ( !collapsed ) {
                     var portRect = new Rect(0, 0, 12, 12);
-                    if ( graph.flowDirection == PlanarDirection.Vertical ) {
-                        portRect.center = new Vector2(rect.center.x, rect.yMax + portOffset);
-                    }
-                    if ( graph.flowDirection == PlanarDirection.Horizontal ) {
-                        portRect.center = new Vector2(rect.xMax + portOffset, rect.center.y);
-                    }
+                    portRect.center = new Vector2(rect.center.x, rect.yMax + yOffset);
                     Styles.Draw(portRect, outConnections.Count > 0 ? StyleSheet.nodePortConnected : StyleSheet.nodePortEmpty);
 
                     if ( GraphEditorUtility.allowClick && canHaveMoreOutConnection ) {
@@ -982,7 +966,7 @@ namespace NodeCanvas.Framework
                         if ( e.type == EventType.MouseDown && e.button == 0 ) {
                             if ( portRect.Contains(e.mousePosition) || nodeOutputBox.Contains(e.mousePosition) ) {
                                 dragDropMisses = 0;
-                                clickedPort = new GUIPort(-1, this, portRect.center);
+                                clickedPort = new GUIPort(0, this, portRect.center);
                                 e.Use();
                             }
                         }
@@ -994,7 +978,7 @@ namespace NodeCanvas.Framework
             if ( clickedPort != null && clickedPort.parent == this ) {
                 var tangA = default(Vector2);
                 var tangB = default(Vector2);
-                ParadoxNotion.CurveUtils.ResolveTangents(clickedPort.pos, e.mousePosition, Prefs.connectionsMLT, graph.flowDirection, out tangA, out tangB);
+                ParadoxNotion.CurveUtils.ResolveTangents(clickedPort.pos, e.mousePosition, Prefs.connectionsMLT, PlanarDirection.Vertical, out tangA, out tangB);
                 Handles.DrawBezier(clickedPort.pos, e.mousePosition, clickedPort.pos + tangA, e.mousePosition + tangB, StyleSheet.GetStatusColor(Status.Resting).WithAlpha(0.8f), StyleSheet.bezierTexture, 3);
             }
 
@@ -1006,16 +990,8 @@ namespace NodeCanvas.Framework
                     continue;
                 }
 
-                Vector2 sourcePos = rect.center;
-                Vector2 targetPos = rect.center;
-                if ( graph.flowDirection == PlanarDirection.Vertical ) {
-                    sourcePos = new Vector2(rect.center.x, rect.yMax + portOffset);
-                    targetPos = new Vector2(connection.targetNode.rect.center.x, connection.targetNode.rect.y);
-                }
-                if ( graph.flowDirection == PlanarDirection.Horizontal ) {
-                    sourcePos = new Vector2(rect.xMax + portOffset, rect.center.y);
-                    targetPos = new Vector2(connection.targetNode.rect.xMin, connection.targetNode.rect.center.y);
-                }
+                var sourcePos = new Vector2(rect.center.x, rect.yMax + yOffset);
+                var targetPos = new Vector2(connection.targetNode.rect.center.x, connection.targetNode.rect.y);
 
                 var sourcePortRect = new Rect(0, 0, 12, 12);
                 sourcePortRect.center = sourcePos;

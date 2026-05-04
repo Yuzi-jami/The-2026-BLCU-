@@ -36,10 +36,6 @@ namespace NodeCanvas.Framework
         //used to halt self-serialization when something went wrong in deserialization
         [SerializeField] private bool _haltSerialization;
 
-        [SerializeField, Tooltip("An external text asset file to serialize the graph on top of the internal serialization")]
-        private TextAsset _externalSerializationFile;
-        public TextAsset externalSerializationFile { get { return _externalSerializationFile; } internal set { _externalSerializationFile = value; } }
-
         [System.NonSerialized] private bool haltForUndo;
 
         ///<summary>Invoked after graph serialization.</summary>
@@ -56,7 +52,7 @@ namespace NodeCanvas.Framework
         protected void OnEnable() { Validate(); OnGraphObjectEnable(); }
         protected void OnDisable() { OnGraphObjectDisable(); }
         protected void OnDestroy() { if ( Threader.applicationIsPlaying ) { Stop(); } OnGraphObjectDestroy(); }
-        protected void OnValidate() { /*we dont need this now*/ }
+        protected void OnValidate() { /*we dont need this now*/  }
         protected void Reset() { OnGraphValidate(); }
         ///----------------------------------------------------------------------------------------------
 
@@ -85,12 +81,6 @@ namespace NodeCanvas.Framework
                 _objectReferences = newReferences;
 
 #if UNITY_EDITOR
-
-                if ( _externalSerializationFile != null ) {
-                    var externalSerializationFilePath = ParadoxNotion.Design.EditorUtils.AssetToSystemPath(UnityEditor.AssetDatabase.GetAssetPath(_externalSerializationFile));
-                    System.IO.File.WriteAllText(externalSerializationFilePath, JSONSerializer.PrettifyJson(newSerialization));
-                }
-
                 //notify owner (this is basically used for bound graphs)
                 var owner = agent as GraphOwner;
                 if ( owner != null ) {
@@ -117,13 +107,17 @@ namespace NodeCanvas.Framework
 
         ///<summary>Deserialize the Graph. Return if that succeed</summary>
         public bool SelfDeserialize() {
+
             if ( Deserialize(_serializedGraph, _objectReferences, false) ) {
+
                 //raise event
                 if ( onGraphDeserialized != null ) {
                     onGraphDeserialized(this);
                 }
+
                 return true;
             }
+
             return false;
         }
 
@@ -257,8 +251,6 @@ namespace NodeCanvas.Framework
         abstract public bool requiresPrimeNode { get; }
         ///<summary>Is the graph considered to be a tree? (and thus nodes auto sorted on position x)</summary>
         abstract public bool isTree { get; }
-        ///<summary>The (visual) direction of the connections (also affects auto sorting for trees)</summary>
-        abstract public PlanarDirection flowDirection { get; }
         ///<summary>Is overriding local blackboard and parametrizing local blackboard variables allowed?</summary>
         abstract public bool allowBlackboardOverrides { get; }
         ///<summary>Whether the graph can accept variables Drag&Drop</summary>
@@ -376,16 +368,18 @@ namespace NodeCanvas.Framework
             }
             set
             {
-                if ( primeNode != value && value != null && value.allowAsPrime && allNodes.Contains(value) ) {
-                    if ( isRunning ) {
-                        if ( primeNode != null ) { primeNode.Reset(); }
-                        value.Reset();
+                if ( primeNode != value && allNodes.Contains(value) ) {
+                    if ( value != null && value.allowAsPrime ) {
+                        if ( isRunning ) {
+                            if ( primeNode != null ) { primeNode.Reset(); }
+                            value.Reset();
+                        }
+                        UndoUtility.RecordObjectComplete(this, "Set Start");
+                        allNodes.Remove(value);
+                        allNodes.Insert(0, value);
+                        UpdateNodeIDs(true);
+                        UndoUtility.SetDirty(this);
                     }
-                    UndoUtility.RecordObjectComplete(this, "Set Start");
-                    allNodes.Remove(value);
-                    allNodes.Insert(0, value);
-                    UpdateNodeIDs(true);
-                    UndoUtility.SetDirty(this);
                 }
             }
         }
@@ -592,12 +586,9 @@ namespace NodeCanvas.Framework
                 allNodes[i].OnPostGraphStarted();
             }
 
-            if ( isRunning ) {
-                //check isRunning  before adding the update call for in case the graph immediately ended in the same frame that it started
-                updateMode = newUpdateMode;
-                if ( updateMode != UpdateMode.Manual ) {
-                    MonoManager.current.AddUpdateCall((MonoManager.UpdateMode)updateMode, UpdateGraph);
-                }
+            updateMode = newUpdateMode;
+            if ( updateMode != UpdateMode.Manual ) {
+                MonoManager.current.AddUpdateCall((MonoManager.UpdateMode)updateMode, UpdateGraph);
             }
         }
 
@@ -1020,7 +1011,7 @@ namespace NodeCanvas.Framework
         ///<summary>Add a new node to this graph</summary>
         public T AddNode<T>() where T : Node { return (T)AddNode(typeof(T)); }
         public T AddNode<T>(Vector2 pos) where T : Node { return (T)AddNode(typeof(T), pos); }
-        public Node AddNode(System.Type nodeType) { return AddNode(nodeType, new Vector2(0, 0)); }
+        public Node AddNode(System.Type nodeType) { return AddNode(nodeType, new Vector2(-translation.x + 100, -translation.y + 100)); }
         public Node AddNode(System.Type nodeType, Vector2 pos) {
 
             if ( !nodeType.RTIsSubclassOf(baseNodeType) ) {

@@ -33,7 +33,6 @@ namespace ParadoxNotion.Services
 
         public delegate bool LogHandler(Message message);
         private static List<LogHandler> subscribers = new List<LogHandler>();
-        public static bool enabled = true;
 
         ///----------------------------------------------------------------------------------------------
 
@@ -71,9 +70,6 @@ namespace ParadoxNotion.Services
 
         //...
         private static void Internal_Log(LogType type, object message, string tag, object context) {
-
-            if ( !enabled ) { return; }
-
             if ( subscribers != null && subscribers.Count > 0 ) {
                 var msg = new Message();
                 msg.type = type;

@@ -12,13 +12,6 @@ namespace NodeCanvas.Editor
 
         ///----------------------------------------------------------------------------------------------
 
-        [UnityEditor.InitializeOnLoadMethod]
-        public static void SetNodeCanvasDefine() {
-            DefinesManager.SetDefineActiveForCurrentTargetGroup("NODECANVAS", true);
-        }
-
-        ///----------------------------------------------------------------------------------------------
-
         [MenuItem("Assets/Create/ParadoxNotion/NodeCanvas/New Task")]
         [MenuItem("Tools/ParadoxNotion/NodeCanvas/Create/New Task", false, 90)]
         public static void ShowTaskWizard() {
