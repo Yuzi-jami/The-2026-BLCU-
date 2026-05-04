@@ -5,7 +5,7 @@ using UnityEngine.Video;
 [RequireComponent(typeof(VideoPlayer))]
 public class playvidio : MonoBehaviour
 {
-    private VideoPlayer _videoPlayer;
+    public VideoPlayer _videoPlayer;
 
     void Start()
     {
@@ -37,6 +37,6 @@ public class playvidio : MonoBehaviour
     void OnVideoFinished(VideoPlayer vp)
     {
         // 切换场景
-        SceneManager.LoadScene("Scenes/关卡1/对话2");
+        SceneManager.LoadScene("Scenes/背景关卡ui/end2");
     }
 }

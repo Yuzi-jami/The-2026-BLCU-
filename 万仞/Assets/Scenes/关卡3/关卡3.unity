@@ -324,7 +324,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1353520529
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -339,18 +339,41 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraBackgroundColor: {r: 0.67, g: 0.83, b: 0.95, a: 1}
   skyBandColor: {r: 0.55, g: 0.78, b: 0.93, a: 1}
+  skyTopColor: {r: 0.88, g: 0.91, b: 0.88, a: 1}
+  skyBottomColor: {r: 0.63, g: 0.74, b: 0.79, a: 1}
+  mistBandColor: {r: 0.92, g: 0.88, b: 0.8, a: 0.36}
+  cloudColor: {r: 0.96, g: 0.95, b: 0.92, a: 0.92}
+  mountainFarColor: {r: 0.42, g: 0.5, b: 0.54, a: 1}
+  mountainNearColor: {r: 0.31, g: 0.39, b: 0.44, a: 1}
   hillColor: {r: 0.44, g: 0.65, b: 0.47, a: 1}
   buildingColor: {r: 0.35, g: 0.43, b: 0.54, a: 1}
+  roofAccentColor: {r: 0.24, g: 0.13, b: 0.1, a: 1}
   hillCountMin: 2
   hillCountMax: 3
   buildingCountMin: 2
   buildingCountMax: 4
+  cloudCountMin: 2
+  cloudCountMax: 4
   groundColor: {r: 0.23, g: 0.24, b: 0.27, a: 1}
   stripePrimaryColor: {r: 0.9, g: 0.88, b: 0.66, a: 1}
   stripeSecondaryColor: {r: 0.86, g: 0.86, b: 0.86, a: 1}
   obstacleColor: {r: 0.8, g: 0.3, b: 0.24, a: 1}
   coinColor: {r: 0.98, g: 0.83, b: 0.2, a: 1}
+  scrollColor: {r: 1, g: 1, b: 1, a: 1}
   playerColor: {r: 0.15, g: 0.23, b: 0.36, a: 1}
+  uiScreenVignetteColor: {r: 0.11, g: 0.09, b: 0.07, a: 0.24}
+  uiTopPanelColor: {r: 0.93, g: 0.87, b: 0.73, a: 0.96}
+  uiTopPanelBorderColor: {r: 0.36, g: 0.18, b: 0.12, a: 0.98}
+  uiStatusPanelColor: {r: 0.92, g: 0.87, b: 0.76, a: 0.95}
+  uiStatusBorderColor: {r: 0.4, g: 0.19, b: 0.13, a: 0.98}
+  uiPrimaryTextColor: {r: 0.2, g: 0.11, b: 0.08, a: 1}
+  uiTitleTextColor: {r: 0.37, g: 0.11, b: 0.08, a: 1}
+  uiStatusTextColor: {r: 0.23, g: 0.13, b: 0.09, a: 1}
+  uiScreenVignetteSprite: {fileID: 0}
+  uiTopPanelSprite: {fileID: 0}
+  uiTopPanelBorderSprite: {fileID: 0}
+  uiStatusPanelSprite: {fileID: 0}
+  uiStatusBorderSprite: {fileID: 0}
 --- !u!4 &1353520530
 Transform:
   m_ObjectHideFlags: 0
@@ -366,6 +389,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1737772103
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1737772105}
+  - component: {fileID: 1737772104}
+  m_Layer: 0
+  m_Name: empty1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1737772104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1737772103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce2828e5dc99f6e4fa8c57a0bc9c2dfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  empty1: {fileID: 1353520528}
+--- !u!4 &1737772105
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1737772103}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.840177, y: 1.7596257, z: -10.035054}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -373,3 +441,4 @@ SceneRoots:
   - {fileID: 963194228}
   - {fileID: 705507995}
   - {fileID: 1353520530}
+  - {fileID: 1737772105}
