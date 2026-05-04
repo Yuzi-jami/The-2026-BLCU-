@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public static class RunnerBootstrap
 {
+    
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void RegisterSceneHook()
     {
@@ -13,7 +14,22 @@ public static class RunnerBootstrap
 
     private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        BuildIfNeeded();
+        int currentLevel = 0;
+        if (scene.name == "关卡3") 
+        {
+            currentLevel = 3;
+            // 3. 将关卡信息存下来，供 GameManager 和 Spawner 使用
+            PlayerPrefs.SetInt("TargetLevel", currentLevel);
+
+            // 4. 只有在真正的游戏关卡场景中，才执行原有的构建逻辑
+            BuildIfNeeded();
+        }
+        else
+        {
+            return;
+        }
+
+  
     }
 
     private static void BuildIfNeeded()
